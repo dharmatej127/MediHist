@@ -43,7 +43,7 @@ const DoctorLogin = () => {
           }
         : formData;
 
-      const res = await axios.post(`http://localhost:5005${endpoint}`, payload);
+      const res = await axios.post(`https://medihist-b2rw.onrender.com${endpoint}`, payload);
       
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data));

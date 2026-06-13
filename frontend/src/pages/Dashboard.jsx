@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import './Dashboard.css';
 
-const API = 'http://localhost:5005/api/patient';
+const API = 'https://medihist-b2rw.onrender.com/api/patient';
 
 const Modal = ({ title, onClose, children }) => (
   <div className="modal-overlay" onClick={onClose}>
@@ -216,7 +216,7 @@ const Dashboard = () => {
     setSaving(true);
     setRegisterError('');
     try {
-      await axios.post('http://localhost:5005/api/auth/register', registerForm);
+      await axios.post('https://medihist-b2rw.onrender.com/api/auth/register', registerForm);
       showToast('Patient registered successfully!');
       // Refresh patient directory list
       const fetchList = await axios.get(API, { headers });
