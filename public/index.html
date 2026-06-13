@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediHist – Login / Register</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h1 { color: #1a73e8; font-size: 1.6rem; margin-bottom: 6px; }
+    p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .tab-btn {
+      flex: 1; padding: 10px; border: 2px solid #1a73e8;
+      background: #fff; color: #1a73e8; border-radius: 8px;
+      cursor: pointer; font-size: 0.95rem; transition: all 0.2s;
+    }
+    .tab-btn.active { background: #1a73e8; color: #fff; }
+    label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 4px; }
+    input {
+      width: 100%; padding: 10px 14px; border: 1px solid #ddd;
+      border-radius: 8px; font-size: 0.95rem; margin-bottom: 16px;
+      outline: none; transition: border 0.2s;
+    }
+    input:focus { border-color: #1a73e8; }
+    button[type="submit"] {
+      width: 100%; padding: 12px; background: #1a73e8;
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 1rem; cursor: pointer; transition: background 0.2s;
+    }
+    button[type="submit"]:hover { background: #1558c0; }
+    #message {
+      margin-top: 16px; padding: 10px 14px;
+      border-radius: 8px; font-size: 0.9rem; display: none;
+    }
+    #message.success { background: #e6f4ea; color: #2e7d32; }
+    #message.error   { background: #fdecea; color: #c62828; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🏥 MediHist</h1>
+    <p class="subtitle">Digitalized medical prescription system</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" placeholder="you@example.com" required />
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" placeholder="Enter password" required />
+      <button type="submit">Login</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" style="display:none;" onsubmit="handleSubmit(event, 'register')">
+      <label for="regEmail">Email</label>
+      <input id="regEmail" type="email" placeholder="you@example.com" required />
+      <label for="regPass">Password</label>
+      <input id="regPass" type="password" placeholder="Min 6 characters" required minlength="6" />
+      <button type="submit">Register</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+      });
+      showMessage('');
+    }
+
+    function showMessage(text, type = '') {
+      const el = document.getElementById('message');
+      if (!text) { el.style.display = 'none'; return; }
+      el.textContent = text;
+      el.className = type;
+      el.style.display = 'block';
+    }
+
+    async function handleSubmit(e, type) {
+      e.preventDefault();
+      const email    = document.getElementById(type === 'login' ? 'loginEmail' : 'regEmail').value;
+      const password = document.getElementById(type === 'login' ? 'loginPass'  : 'regPass').value;
+      const url = type === 'login' ? '/api/auth/login' : '/api/auth/register';
+
+      try {
+        const res  = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showMessage(data.error || 'Something went wrong', 'error');
+        } else {
+          if (data.token) localStorage.setItem('token', data.token);
+          showMessage(data.message, 'success');
+        }
+      } catch (err) {
+        showMessage('Network error. Is the server running?', 'error');
+      }
+    }
+  </script>
+</body>
+</html>
