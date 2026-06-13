@@ -36,7 +36,8 @@ const PatientLogin = () => {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const res = await axios.post(`https://medihist-b2rw.onrender.com${endpoint}`, payload);
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+      const res = await axios.post(`${API_BASE}${endpoint}`, payload);
       
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data));

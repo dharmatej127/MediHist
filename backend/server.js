@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://medi-hist-blond.vercel.app/login'],
+  origin: ['http://localhost:5173', 'https://medi-hist-blond.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -26,7 +26,12 @@ app.use('/api/patient', patientRoutes);
 
 // Database Connection
 const PORT = process.env.PORT || 5005;
-const MONGO_URI = process.env.MONGO_URL || 'mongodb://localhost:27017/medihist_ehr';
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
+
+if (!MONGO_URI) {
+  console.error("CRITICAL ERROR: Missing MONGO_URI environment variable.");
+  process.exit(1);
+}
 
 mongoose.connect(MONGO_URI)
   .then(() => {
